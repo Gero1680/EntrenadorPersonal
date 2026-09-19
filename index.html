@@ -95,6 +95,29 @@ Tabata:[
 ["Dead bug","Core","Movimiento lento y controlado.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],""],
 ["Swing ligero (opcional)","Bisagra + potencia","Solo si dominas la bisagra y estás fresco.","Ligero",["opcional","opcional","opcional","omitir si hay fatiga"],""]
 ]};
+
+const VIDEOS={
+"Sentadilla goblet":"https://www.youtube.com/watch?v=nfX7IFK9UNI",
+"Peso muerto rumano":"https://www.youtube.com/watch?v=aa57T45iFSE",
+"Zancada atrás":"https://www.youtube.com/watch?v=lKhZvT_NkOs",
+"Remo unilateral":"https://www.youtube.com/results?search_query=one+arm+dumbbell+row+proper+form+NASM",
+"Press de suelo":"https://www.youtube.com/results?search_query=dumbbell+floor+press+proper+form",
+"Paseo maleta":"https://www.youtube.com/results?search_query=suitcase+carry+exercise+proper+form",
+"Remo inclinado":"https://www.youtube.com/results?search_query=bent+over+dumbbell+row+proper+form+NASM",
+"Step-up":"https://www.youtube.com/results?search_query=step+up+exercise+proper+form+NASM",
+"Press unilateral":"https://www.youtube.com/results?search_query=single+arm+dumbbell+overhead+press+proper+form",
+"Paseo granjero":"https://www.youtube.com/results?search_query=farmer+carry+exercise+proper+form+NASM",
+"Dead bug":"https://www.youtube.com/results?search_query=dead+bug+exercise+proper+form+NASM",
+"Remo con banda":"https://www.youtube.com/results?search_query=resistance+band+row+proper+form",
+"Sentadilla":"https://www.youtube.com/watch?v=nfX7IFK9UNI",
+"Flexiones":"https://www.youtube.com/results?search_query=push+up+proper+form+NASM",
+"Swing ligero (opcional)":"https://www.youtube.com/results?search_query=dumbbell+swing+proper+form",
+"Step-up rápido":"https://www.youtube.com/results?search_query=step+up+exercise+proper+form+NASM",
+"Boxeo al aire":"https://www.youtube.com/results?search_query=shadow+boxing+basic+technique",
+"Sentadilla + press":"https://www.youtube.com/results?search_query=dumbbell+squat+to+press+proper+form",
+"Mountain climber controlado":"https://www.youtube.com/results?search_query=mountain+climber+proper+form"
+};
+
 let state=JSON.parse(localStorage.getItem("miEntrenador")||'{"week":1,"session":"A","index":0,"back":"Bien","logs":[]}');
 const $=id=>document.getElementById(id);
 function persist(){localStorage.setItem("miEntrenador",JSON.stringify(state))}
@@ -104,8 +127,12 @@ $("week").value=state.week;$("session").value=state.session;
 const es=exercises(), e=es[state.index];
 $("counter").textContent=`${state.index+1}/${es.length}`;
 $("exerciseCard").innerHTML=`<div class="exercise">${e[0]}</div><div class="muted">${e[1]}</div>
-<div class="visual">◯ → ● → ◯</div>
+<div class="visual">▶️</div>
 <p><b>Semana ${state.week} · objetivo:</b> ${e[4][state.week-1]}</p>
+<a href="${VIDEOS[e[0]]}" target="_blank" rel="noopener" style="display:block;text-decoration:none">
+<button class="primary" style="width:100%;margin:4px 0 10px">▶ Ver vídeo explicativo en YouTube</button>
+</a>
+<div class="muted">El enlace abre YouTube con una demostración del ejercicio.</div>
 <p><b>Carga inicial:</b> ${e[3]} ${e[5]?`· <b>Tempo:</b> ${e[5]}`:""}</p><p><b>Técnica:</b> ${e[2]}</p>`;
 $("backBtns").innerHTML=["Bien","Cargada","Síntomas"].map(x=>`<button class="chip ${state.back===x?"active":""}" onclick="setBack('${x}')">${x}</button>`).join("");
 $("backMsg").textContent=state.back==="Cargada"?"Reduce volumen 20–30%, RIR 3–4 y evita impacto/explosividad.":state.back==="Síntomas"?"No hagas la sesión normal. Prioriza movilidad suave; si hay dolor irradiado, hormigueo, debilidad o empeoramiento, consulta a un profesional.":"Sigue el plan si el movimiento es cómodo y estable.";
