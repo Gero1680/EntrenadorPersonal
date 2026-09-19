@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Mi Entrenador</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#111827;background:#f3f4f6}
+*{box-sizing:border-box}body{margin:0}header{background:#111827;color:white;padding:18px 16px;position:sticky;top:0;z-index:2}
+h1{font-size:22px;margin:0}.wrap{max-width:760px;margin:auto;padding:14px}.row{display:flex;gap:8px;flex-wrap:wrap}.card{background:white;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px #0000000d}
+button,select,input{font:inherit;border-radius:12px;border:1px solid #d1d5db;padding:11px;background:white}
+button{cursor:pointer}.primary{background:#111827;color:white;border-color:#111827}.danger{background:#fee2e2}.chip.active{background:#dbeafe;border-color:#60a5fa}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+label{font-size:12px;color:#6b7280;display:block;margin-bottom:4px}.big{font-size:42px;font-weight:800;text-align:center}.muted{color:#6b7280;font-size:13px}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#111827}
+nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;justify-content:center;gap:8px;padding:8px;z-index:3}
+nav button{flex:1;max-width:180px}.hidden{display:none}.exercise{font-size:24px;font-weight:800}.visual{height:130px;border-radius:14px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:44px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
+main{padding-bottom:80px}
+</style>
+</head>
+<body>
+<header><h1>Mi Entrenador</h1><div class="muted" style="color:#d1d5db">4 semanas · fuerza · movilidad · cardio</div></header>
+<main class="wrap">
+<section id="training">
+<div class="card">
+<div class="row">
+<select id="week"></select>
+<select id="session"></select>
+</div>
+<div style="margin-top:10px" class="row" id="backBtns"></div>
+<div id="backMsg" class="muted"></div>
+</div>
+<div class="card" id="exerciseCard"></div>
+<div class="card">
+<div class="big" id="timer">00:00</div>
+<div class="muted" style="text-align:center" id="timerLabel">Descanso</div>
+<div class="row" style="justify-content:center;margin-top:8px">
+<button class="primary" id="startTimer">Iniciar</button><button id="pauseTimer">Pausa</button><button id="resetTimer">Reset</button>
+</div>
+</div>
+<div class="card">
+<h3>Registrar serie</h3>
+<div class="grid">
+<div><label>Carga</label><input id="load" placeholder="kg"></div>
+<div><label>Reps / segundos</label><input id="reps" placeholder="10"></div>
+<div><label>RIR</label><input id="rir" placeholder="2"></div>
+<div><label>Notas</label><input id="notes" placeholder="Opcional"></div>
+</div>
+<button class="primary" style="width:100%;margin-top:10px" id="save">Guardar serie</button>
+</div>
+<div class="card">
+<div class="row" style="justify-content:space-between">
+<button id="prev">← Anterior</button><b id="counter"></b><button id="next">Siguiente →</button>
+</div>
+</div>
+</section>
+<section id="history" class="hidden">
+<div class="card"><h2>Progreso</h2><div id="summary"></div></div>
+<div id="logs"></div>
+</section>
+</main>
+<nav><button id="tabTraining" class="primary">🏋️ Entreno</button><button id="tabHistory">📈 Historial</button></nav>
+<script>
+const PLAN={
+A:[
+["Sentadilla goblet","Piernas + core","Pecho alto, rodillas siguen la línea de los pies; baja con control.","12 kg",["10","12","8–10","2×8–10"],"3-1-1"],
+["Remo unilateral","Espalda","Cadera estable y espalda neutra; lleva el codo hacia la cadera.","12 kg",["10/lado","12/lado","8–10/lado","2×8–10"],"2-1-2"],
+["Zancada atrás","Piernas","Paso atrás estable; torso erguido.","6 kg/mano",["8/lado","10/lado","8/lado","2×8/lado"],"2-1-1"],
+["Press de suelo","Empuje","Escápulas apoyadas y codos controlados.","8 kg/mano",["10","12","8–10","2×8–10"],"2-1-1"],
+["Peso muerto rumano","Cadena posterior","Bisagra de cadera; espalda neutra y carga cerca.","12 kg/mano",["10","12","8–10","2×8–10"],"3-1-1"],
+["Paseo maleta","Core + estabilidad","Camina erguido sin inclinarte hacia el peso.","16 kg",["30 s/lado","40 s/lado","30–40 s/lado","2×30 s/lado"],""]
+],
+B:[
+["Peso muerto rumano","Cadena posterior","Bisagra de cadera y abdomen activo.","12 kg/mano",["10","12","8–10","2×8–10"],"3-1-1"],
+["Remo inclinado","Espalda","Cadera atrás, columna neutra.","10 kg/mano",["10","12","8–10","2×8–10"],"2-1-2"],
+["Step-up","Piernas","Apoya todo el pie y sube con control.","Peso corporal",["8/lado","10/lado","8/lado","2×8/lado"],"2-1-1"],
+["Press unilateral","Hombro + core","Glúteos y abdomen activos; evita arquear.","6 kg",["8/lado","10/lado","8/lado","2×8/lado"],"2-1-1"],
+["Paseo granjero","Core + agarre","Camina alto y estable.","16 kg/mano",["30 s","40 s","30 s","2×30 s"],""],
+["Dead bug","Core","Zona lumbar estable y movimiento lento.","Peso corporal",["6/lado","8/lado","8/lado","2×6/lado"],""]
+],
+HIIT:[
+["Step-up rápido","Cardio + piernas","Rápido pero controlado.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],""],
+["Boxeo al aire","Cardio","Golpes rápidos con hombros relajados.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],""],
+["Sentadilla + press","Cardio + fuerza","Carga ligera y movimiento fluido.","4–6 kg/mano",["8×30/30","8×30/30","10×30/30","6×30/30"],""],
+["Mountain climber controlado","Cardio + core","Cadera estable y rango cómodo.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],""]
+],
+Tabata:[
+["Remo con banda","Espalda","Escápulas atrás y abajo.","Banda",["20/10×8","20/10×8","20/10×8","20/10×8"],""],
+["Sentadilla","Piernas","Controla la bajada.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],""],
+["Flexiones","Empuje","Cuerpo en bloque; adapta con rodillas si hace falta.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],""],
+["Dead bug","Core","Movimiento lento y controlado.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],""],
+["Swing ligero (opcional)","Bisagra + potencia","Solo si dominas la bisagra y estás fresco.","Ligero",["opcional","opcional","opcional","omitir si hay fatiga"],""]
+]};
+let state=JSON.parse(localStorage.getItem("miEntrenador")||'{"week":1,"session":"A","index":0,"back":"Bien","logs":[]}');
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem("miEntrenador",JSON.stringify(state))}
+function exercises(){return PLAN[state.session]}
+function render(){
+$("week").value=state.week;$("session").value=state.session;
+const es=exercises(), e=es[state.index];
+$("counter").textContent=`${state.index+1}/${es.length}`;
+$("exerciseCard").innerHTML=`<div class="exercise">${e[0]}</div><div class="muted">${e[1]}</div>
+<div class="visual">◯ → ● → ◯</div>
+<p><b>Semana ${state.week} · objetivo:</b> ${e[4][state.week-1]}</p>
+<p><b>Carga inicial:</b> ${e[3]} ${e[5]?`· <b>Tempo:</b> ${e[5]}`:""}</p><p><b>Técnica:</b> ${e[2]}</p>`;
+$("backBtns").innerHTML=["Bien","Cargada","Síntomas"].map(x=>`<button class="chip ${state.back===x?"active":""}" onclick="setBack('${x}')">${x}</button>`).join("");
+$("backMsg").textContent=state.back==="Cargada"?"Reduce volumen 20–30%, RIR 3–4 y evita impacto/explosividad.":state.back==="Síntomas"?"No hagas la sesión normal. Prioriza movilidad suave; si hay dolor irradiado, hormigueo, debilidad o empeoramiento, consulta a un profesional.":"Sigue el plan si el movimiento es cómodo y estable.";
+}
+window.setBack=x=>{state.back=x;persist();render()};
+$("week").innerHTML=[1,2,3,4].map(x=>`<option>${x}</option>`).join("");
+$("session").innerHTML=["A","B","HIIT","Tabata"].map(x=>`<option>${x}</option>`).join("");
+$("week").onchange=e=>{state.week=+e.target.value;state.index=0;persist();render()};
+$("session").onchange=e=>{state.session=e.target.value;state.index=0;persist();render()};
+$("prev").onclick=()=>{state.index=(state.index-1+exercises().length)%exercises().length;persist();render()};
+$("next").onclick=()=>{state.index=(state.index+1)%exercises().length;persist();render()};
+$("save").onclick=()=>{let l=$("load").value,r=$("reps").value,rir=$("rir").value;if(!l&&!r&&!rir)return;state.logs.push({week:state.week,session:state.session,exercise:exercises()[state.index][0],load:l,reps:r,rir,notes:$("notes").value,date:new Date().toLocaleString()});persist();["load","reps","rir","notes"].forEach(x=>$(x).value="");renderHistory()};
+let timer=0,interval=null;
+function duration(){return state.session==="HIIT"?30:state.session==="Tabata"?20:60}
+function timerRender(){$("timer").textContent=`${String(Math.floor(timer/60)).padStart(2,"0")}:${String(timer%60).padStart(2,"0")}`}
+$("startTimer").onclick=()=>{if(timer<=0)timer=duration();clearInterval(interval);interval=setInterval(()=>{timer--;timerRender();if(timer<=0){clearInterval(interval);navigator.vibrate?.([150,80,150]);}},1000);timerRender()};
+$("pauseTimer").onclick=()=>clearInterval(interval);
+$("resetTimer").onclick=()=>{clearInterval(interval);timer=0;timerRender()};
+function renderHistory(){
+$("summary").innerHTML=`<b>${state.logs.length}</b> series registradas · datos guardados en este dispositivo.`;
+$("logs").innerHTML=state.logs.slice().reverse().map(x=>`<div class="card"><b>S${x.week} · ${x.session} · ${x.exercise}</b><br>${x.load||"—"} · ${x.reps||"—"} · RIR ${x.rir||"—"}<div class="muted">${x.date}</div></div>`).join("");
+}
+$("tabTraining").onclick=()=>{$("training").classList.remove("hidden");$("history").classList.add("hidden")};
+$("tabHistory").onclick=()=>{$("training").classList.add("hidden");$("history").classList.remove("hidden");renderHistory()};
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
