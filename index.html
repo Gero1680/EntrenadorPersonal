@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#111827">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Mi Entrenador v3</title>
+<title>Mi Entrenador v4</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#111827;background:#f3f4f6}
 *{box-sizing:border-box}body{margin:0}header{background:#111827;color:white;padding:16px;position:sticky;top:0;z-index:5}
@@ -20,13 +20,14 @@ button{cursor:pointer}.primary{background:#111827;color:white;border-color:#1118
 .timerInfo{text-align:center;font-weight:700}.green{color:#047857}.orange{color:#b45309}
 .progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:#111827}
 .schedule{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.day{padding:9px;border-radius:12px;background:#f3f4f6;font-size:13px}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#eef2ff;font-size:12px;margin:2px 2px 0 0}
 nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;gap:8px;padding:8px;z-index:10}
 nav button{flex:1}.hidden{display:none}main{padding-bottom:78px}
 @media(min-width:650px){.schedule{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
-<header><h1>Mi Entrenador v3</h1><div style="color:#d1d5db;font-size:13px">4 semanas · fuerza · HIIT marcial · movilidad</div></header>
+<header><h1>Mi Entrenador v4</h1><div style="color:#d1d5db;font-size:13px">4 semanas · fuerza · HIIT marcial · movilidad</div></header>
 <main class="wrap">
 <section id="training">
 <div class="card">
@@ -34,20 +35,24 @@ nav button{flex:1}.hidden{display:none}main{padding-bottom:78px}
 <div class="schedule">
 <div class="day"><b>Lun</b><br>Fuerza A</div><div class="day"><b>Mar</b><br>HIIT marcial</div>
 <div class="day"><b>Mié</b><br>Pádel</div><div class="day"><b>Jue</b><br>Fuerza B</div>
-<div class="day"><b>Vie</b><br>Tabata</div><div class="day"><b>Sáb</b><br>Descanso</div>
+<div class="day"><b>Vie</b><br>Tábata</div><div class="day"><b>Sáb</b><br>Descanso</div>
 <div class="day"><b>Dom</b><br>Fútbol sala</div>
 </div>
+<p class="muted" style="margin-bottom:0">En v4 se eliminan los ejercicios idénticos entre las cuatro sesiones. Se mantienen patrones de movimiento complementarios, pero cada ejercicio aparece una sola vez en la semana.</p>
 </div>
+
 <div class="card">
 <div class="row">
 <select id="week"></select>
 <select id="session"></select>
 </div>
-<div class="muted" style="margin-top:7px">Los botones muestran la semana y el tipo de entrenamiento.</div>
+<div class="muted" style="margin-top:7px">sem.1–sem.4 · Fuerza A · HIIT marcial · Fuerza B · Tábata</div>
 <div id="backBtns" class="row" style="margin-top:10px"></div>
 <div id="backMsg" class="muted"></div>
 </div>
+
 <div class="card" id="exerciseCard"></div>
+
 <div class="card">
 <div class="timerInfo" id="timerLabel">Preparado</div>
 <div class="big" id="timer">00:00</div>
@@ -67,6 +72,7 @@ nav button{flex:1}.hidden{display:none}main{padding-bottom:78px}
 </div>
 </div>
 </div>
+
 <div class="card">
 <h3 style="margin-top:0">Registro de la serie</h3>
 <div class="grid">
@@ -77,16 +83,20 @@ nav button{flex:1}.hidden{display:none}main{padding-bottom:78px}
 </div>
 <button class="primary" style="width:100%;margin-top:9px" id="save">Guardar serie</button>
 </div>
+
 <div class="card">
 <div class="row" style="justify-content:space-between">
 <button id="prev">← Anterior</button><b id="counter"></b><button id="next">Siguiente →</button>
 </div>
 </div>
+
 <div class="card">
-<b>Progresión</b>
-<p class="muted">RIR ≥3 al completar el objetivo: sube 1–2 kg por mancuerna cuando sea posible. RIR 2: mantén carga y añade 1–2 reps. RIR 0–1: mantén o reduce.</p>
+<b>Por qué está ordenado así</b>
+<p class="muted">Fuerza A empieza por sentadilla, después tirón y empuje, unilateral de pierna, bisagra y estabilidad. Fuerza B cambia los patrones y vuelve a alternar pierna, empuje, cadena posterior, tirón y estabilidad. El HIIT del martes evita cargar de nuevo con una sesión pesada de fuerza de piernas, y el Tábata del viernes es corto/moderado para dejar margen antes del fútbol sala del domingo.</p>
+<p class="muted">La lógica prioriza constancia, trabajo de los grandes grupos musculares y una progresión que puedas sostener. ACSM 2026 destaca la importancia de entrenar los grandes grupos musculares de forma regular y de individualizar el programa; la OMS recomienda fuerza de los principales grupos musculares al menos 2 días por semana.</p>
 </div>
 </section>
+
 <section id="history" class="hidden">
 <div class="card"><h2>Historial</h2><div id="summary"></div></div><div id="logs"></div>
 </section>
@@ -96,105 +106,121 @@ nav button{flex:1}.hidden{display:none}main{padding-bottom:78px}
 <script>
 const IMG={
 "Sentadilla goblet":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
-"Peso muerto rumano":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg",
-"Zancada atrás":"https://cdni.iconscout.com/illustration/premium/thumb/man-doing-reverse-lunge-exercise-10312511-8341295.png?f=webp",
 "Remo unilateral":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
 "Press de suelo":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Floor_Press/0.jpg",
+"Zancada atrás":"https://cdni.iconscout.com/illustration/premium/thumb/man-doing-reverse-lunge-exercise-10312511-8341295.png?f=webp",
+"Peso muerto rumano":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg",
 "Paseo maleta":"https://cdn.shopify.com/s/files/1/0688/7325/7256/files/ChatGPT_Image_Jun_18_2025_02_55_33_PM_480x480.png?v=1750233392",
-"Remo inclinado":"https://cdn.shopify.com/s/files/1/0564/6411/3852/files/Bent_Over_Row_1024x1024.jpg?v=1660315462",
+
 "Step-up":"https://cdn.vectorstock.com/i/500p/50/37/young-woman-doing-dumbbell-step-up-exercise-vector-49815037.jpg",
 "Press unilateral":"https://cdni.iconscout.com/illustration/premium/thumb/man-doing-floor-dumbbell-press-exercise-9863435-8045165.png",
+"Puente de glúteos con barra":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg",
+"Remo inclinado":"https://cdn.shopify.com/s/files/1/0564/6411/3852/files/Bent_Over_Row_1024x1024.jpg?v=1660315462",
 "Paseo granjero":"https://cdn.shopify.com/s/files/1/0688/7325/7256/files/ChatGPT_Image_Jun_18_2025_02_55_33_PM_480x480.png?v=1750233392",
 "Dead bug":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
-"Remo con banda":"https://cdn.shopify.com/s/files/1/0564/6411/3852/files/Bent_Over_Row_1024x1024.jpg?v=1660315462",
-"Sentadilla":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
+
+"Boxeo al aire":"https://www.nerdfitness.com/wp-content/uploads/2020/05/shadowboxing.jpg",
+"Rodillas alternas":"https://www.muscleandstrength.com/sites/default/files/styles/800x500/public/alternating-knee-raise.jpg",
+"Desplazamiento lateral de combate":"https://www.stack.com/wp-content/uploads/2022/07/lateral-shuffle.jpg",
+"Patada frontal controlada":"https://www.muscleandfitness.com/wp-content/uploads/2018/01/front-kick.jpg",
+
 "Flexiones":"https://fitfunctionally.com/wp-content/uploads/2024/12/Functional-Fitness-Examples-Push-ups-1024x992.webp",
-"Swing ligero (opcional)":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kettlebell_Swing/0.jpg",
-"Step-up rápido":"https://cdn.vectorstock.com/i/500p/50/37/young-woman-doing-dumbbell-step-up-exercise-vector-49815037.jpg",
-"Boxeo al aire":"https://cdn.shopify.com/s/files/1/0564/6411/3852/files/Bent_Over_Row_1024x1024.jpg?v=1660315462",
-"Sentadilla + press":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
-"Mountain climber controlado":"https://images.squarespace-cdn.com/content/v1/5f24e806d68fbe07dae66d00/1621544816219-G0LTJLREAGOV9IIFDVMU/montain%2Bclimbers.jpeg"
+"Sentadilla isométrica en pared":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wall_Sit/0.jpg",
+"Bird-dog":"https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bird_Dog/0.jpg",
+"Marcha de oso alta":"https://www.verywellfit.com/thmb/5f2a5b3a0c7c4e2a8b8a5f7d9d8c1a4a/bear-crawl-exercise-56a0c5a9b7d14a9f8e1a4c5d6e7f8a9b.jpg"
 };
+
 const VIDEOS={
 "Sentadilla goblet":"https://www.youtube.com/watch?v=nfX7IFK9UNI",
-"Peso muerto rumano":"https://www.youtube.com/results?search_query=romanian+deadlift+proper+form",
-"Zancada atrás":"https://www.youtube.com/results?search_query=reverse+lunge+proper+form",
 "Remo unilateral":"https://www.youtube.com/watch?v=T0QAh5oaJV8",
 "Press de suelo":"https://www.youtube.com/results?search_query=dumbbell+floor+press+proper+form",
+"Zancada atrás":"https://www.youtube.com/results?search_query=reverse+lunge+proper+form",
+"Peso muerto rumano":"https://www.youtube.com/results?search_query=romanian+deadlift+proper+form",
 "Paseo maleta":"https://www.youtube.com/results?search_query=suitcase+carry+proper+form",
-"Remo inclinado":"https://www.youtube.com/results?search_query=bent+over+dumbbell+row+proper+form",
 "Step-up":"https://www.youtube.com/results?search_query=step+up+proper+form",
 "Press unilateral":"https://www.youtube.com/results?search_query=single+arm+dumbbell+overhead+press+proper+form",
+"Puente de glúteos con barra":"https://www.youtube.com/results?search_query=barbell+hip+thrust+proper+form",
+"Remo inclinado":"https://www.youtube.com/results?search_query=bent+over+dumbbell+row+proper+form",
 "Paseo granjero":"https://www.youtube.com/results?search_query=farmer+carry+proper+form",
 "Dead bug":"https://www.youtube.com/results?search_query=dead+bug+proper+form",
-"Remo con banda":"https://www.youtube.com/results?search_query=resistance+band+row+proper+form",
-"Sentadilla":"https://www.youtube.com/watch?v=nfX7IFK9UNI",
-"Flexiones":"https://www.youtube.com/results?search_query=push+up+proper+form",
-"Swing ligero (opcional)":"https://www.youtube.com/results?search_query=dumbbell+swing+proper+form",
-"Step-up rápido":"https://www.youtube.com/results?search_query=step+up+proper+form",
 "Boxeo al aire":"https://www.youtube.com/results?search_query=shadow+boxing+basic+technique",
-"Sentadilla + press":"https://www.youtube.com/results?search_query=dumbbell+squat+to+press+proper+form",
-"Mountain climber controlado":"https://www.youtube.com/results?search_query=mountain+climber+proper+form"
+"Rodillas alternas":"https://www.youtube.com/results?search_query=alternating+knee+strikes+technique",
+"Desplazamiento lateral de combate":"https://www.youtube.com/results?search_query=lateral+shuffle+athletic+technique",
+"Patada frontal controlada":"https://www.youtube.com/results?search_query=front+kick+basic+technique",
+"Flexiones":"https://www.youtube.com/results?search_query=push+up+proper+form",
+"Sentadilla isométrica en pared":"https://www.youtube.com/results?search_query=wall+sit+proper+form",
+"Bird-dog":"https://www.youtube.com/results?search_query=bird+dog+exercise+proper+form",
+"Marcha de oso alta":"https://www.youtube.com/results?search_query=bear+crawl+proper+form"
 };
+
 const PLAN={
 A:[
 ["Sentadilla goblet","Piernas + core","Pecho alto, rodillas siguen la línea de los pies; baja con control.","12 kg",["10","12","8–10","8–10"],"3-1-1","rep"],
-["Remo unilateral","Espalda","Cadera estable y espalda neutra; codo hacia la cadera.","12 kg",["10/lado","12/lado","8–10/lado","8–10/lado"],"2-1-2","rep"],
-["Zancada atrás","Piernas","Paso atrás estable; torso erguido.","6 kg/mano",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
-["Press de suelo","Empuje","Escápulas apoyadas y codos controlados.","8 kg/mano",["10","12","8–10","8–10"],"2-1-1","rep"],
-["Peso muerto rumano","Cadena posterior","Bisagra de cadera; espalda neutra y carga cerca.","12 kg/mano",["10","12","8–10","8–10"],"3-1-1","rep"],
-["Paseo maleta","Core + estabilidad","Camina erguido sin inclinarte hacia el peso.","16 kg",["30 s/lado","40 s/lado","30–40 s/lado","30 s/lado"],"","time"]
-],
-B:[
-["Peso muerto rumano","Cadena posterior","Bisagra de cadera y abdomen activo.","12 kg/mano",["10","12","8–10","8–10"],"3-1-1","rep"],
-["Remo inclinado","Espalda","Cadera atrás, columna neutra.","10 kg/mano",["10","12","8–10","8–10"],"2-1-2","rep"],
-["Step-up","Piernas","Apoya todo el pie y sube con control.","Peso corporal",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
-["Press unilateral","Hombro + core","Glúteos y abdomen activos; evita arquear.","6 kg",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
-["Paseo granjero","Core + agarre","Camina alto y estable.","16 kg/mano",["30 s","40 s","30 s","30 s"],"","time"],
-["Dead bug","Core","Zona lumbar estable y movimiento lento.","Peso corporal",["6/lado","8/lado","8/lado","6/lado"],"","rep"]
+["Remo unilateral","Espalda + escápula","Cadera estable y espalda neutra; lleva el codo hacia la cadera.","12 kg",["10/lado","12/lado","8–10/lado","8–10/lado"],"2-1-2","rep"],
+["Press de suelo","Empuje horizontal","Escápulas apoyadas y codos controlados; no rebotes.","8 kg/mano",["10","12","8–10","8–10"],"2-1-1","rep"],
+["Zancada atrás","Pierna unilateral","Paso atrás estable y rodilla delantera alineada con el pie.","6 kg/mano",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
+["Peso muerto rumano","Cadena posterior","Bisagra de cadera; espalda neutra y carga cerca del cuerpo.","12 kg/mano",["10","12","8–10","8–10"],"3-1-1","rep"],
+["Paseo maleta","Core + estabilidad lateral","Camina alto sin inclinarte hacia la carga.","16 kg",["30 s/lado","40 s/lado","30–40 s/lado","30 s/lado"],"","time"]
 ],
 HIIT:[
-["Step-up rápido","Cardio + piernas","Rápido pero controlado.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
-["Boxeo al aire","HIIT marcial","Golpes rápidos, guardia estable y hombros relajados.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
-["Sentadilla + press","Cardio + fuerza","Carga ligera y movimiento fluido.","4–6 kg/mano",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
-["Mountain climber controlado","Cardio + core","Cadera estable y rango cómodo.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"]
+["Boxeo al aire","HIIT marcial + cardio","Guardia estable, golpes rápidos y relajados; gira suavemente el tronco.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
+["Rodillas alternas","HIIT marcial + cadera","Eleva la rodilla de forma controlada; torso alto, sin tirar de la zona lumbar.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
+["Desplazamiento lateral de combate","Cardio + coordinación","Pasos cortos y rápidos, rodillas suaves, sin cruzar los pies.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"],
+["Patada frontal controlada","HIIT marcial + equilibrio","Patada baja-media y controlada; apoya antes de acelerar de nuevo.","Peso corporal",["8×30/30","8×30/30","10×30/30","6×30/30"],"","interval"]
+],
+B:[
+["Step-up","Pierna unilateral + glúteo","Todo el pie sobre el apoyo; sube empujando con la pierna de arriba.","Peso corporal",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
+["Press unilateral","Hombro + core","Glúteos y abdomen activos; evita arquear la espalda.","6 kg",["8/lado","10/lado","8/lado","8/lado"],"2-1-1","rep"],
+["Puente de glúteos con barra","Glúteos + cadena posterior","Costillas abajo y pelvis neutra; aprieta glúteos arriba sin hiperextender.","Barra ligera",["10","12","8–10","8–10"],"2-1-2","rep"],
+["Remo inclinado","Espalda + cadena posterior","Bisagra estable, columna neutra y codos hacia atrás.","10 kg/mano",["10","12","8–10","8–10"],"2-1-2","rep"],
+["Paseo granjero","Core + agarre","Dos cargas iguales; camina alto, pasos cortos y controlados.","16 kg/mano",["30 s","40 s","30 s","30 s"],"","time"],
+["Dead bug","Core anti-extensión","Mantén la zona lumbar estable y mueve brazos/piernas lentamente.","Peso corporal",["6/lado","8/lado","8/lado","6/lado"],"","rep"]
 ],
 Tabata:[
-["Remo con banda","Espalda","Escápulas atrás y abajo.","Banda",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
-["Sentadilla","Piernas","Controla la bajada.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
-["Flexiones","Empuje","Cuerpo en bloque; adapta con rodillas si hace falta.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
-["Dead bug","Core","Movimiento lento y controlado.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
-["Swing ligero (opcional)","Bisagra + potencia","Solo si dominas la bisagra y estás fresco.","Ligero",["opcional","opcional","opcional","omitir si hay fatiga"],"","tabata"]
+["Flexiones","Empuje horizontal","Cuerpo en bloque; usa apoyo de rodillas si la técnica se deteriora.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
+["Sentadilla isométrica en pared","Piernas + resistencia","Rodillas cómodas y espalda apoyada; intensidad moderada.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
+["Bird-dog","Core + control lumbar","Mueve brazo y pierna contrarios sin girar la pelvis.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"],
+["Marcha de oso alta","Core + coordinación","Cadera baja y estable; pasos pequeños. Reduce rango si carga la espalda.","Peso corporal",["20/10×8","20/10×8","20/10×8","20/10×8"],"","tabata"]
 ]};
-const NAMES={A:"Fuerza A",B:"Fuerza B",HIIT:"HIIT marcial",Tabata:"Tábata"};
+
+const NAMES={A:"Fuerza A",HIIT:"HIIT marcial",B:"Fuerza B",Tabata:"Tábata"};
 let state=JSON.parse(localStorage.getItem("miEntrenador")||'{"week":1,"session":"A","index":0,"back":"Bien","logs":[]}');
-let timer=0, totalTimer=0, timerKind="", interval=null, setNo=1, repNo=0, intervalNo=1, tabWork=true;
+let timer=0,totalTimer=0,timerKind="",interval=null,setNo=1,repNo=0,intervalNo=1,tabWork=true;
 
 const $=id=>document.getElementById(id);
 function persist(){localStorage.setItem("miEntrenador",JSON.stringify(state))}
 function exs(){return PLAN[state.session]}
-function sets(){return state.session==="HIIT"?1:state.session==="Tabata"?1:(state.week===4?2:3)}
+function sets(){return state.session==="HIIT"||state.session==="Tabata"?1:(state.week===4?2:3)}
 function targetText(){return exs()[state.index][4][state.week-1]}
 function parseTarget(){let t=targetText();let m=t.match(/^(\d+)/);return m?parseInt(m[1]):10}
+
 function resetExerciseTimer(){
  clearInterval(interval);timer=0;totalTimer=0;setNo=1;repNo=0;intervalNo=1;tabWork=true;timerKind="";
+ $("repControls").classList.add("hidden");
  timerRender();
 }
+
 function render(){
  $("week").value=state.week;$("session").value=state.session;
  const es=exs(),e=es[state.index];
  $("counter").textContent=`${state.index+1}/${es.length}`;
  $("exerciseCard").innerHTML=`
  <div class="exercise">${e[0]}</div><div class="muted">${e[1]}</div>
- <img class="visual" src="${IMG[e[0]]}" alt="Esquema o imagen de ${e[0]}" onerror="this.style.display='none'">
+ <img class="visual" src="${IMG[e[0]]||''}" alt="Esquema o imagen de ${e[0]}" onerror="this.style.display='none'">
  <a href="${VIDEOS[e[0]]}" target="_blank" rel="noopener" style="text-decoration:none">
  <button class="primary" style="width:100%">▶ Ver vídeo explicativo en YouTube</button></a>
+ <div>${e[1].split("+").map(x=>`<span class="badge">${x.trim()}</span>`).join("")}</div>
  <p><b>sem.${state.week}</b> · <b>Objetivo:</b> ${targetText()} ${e[5]?`· <b>Tempo:</b> ${e[5]}`:""}</p>
  <p><b>Carga inicial:</b> ${e[3]}</p><p><b>Técnica:</b> ${e[2]}</p>`;
  $("backBtns").innerHTML=["Bien","Cargada","Síntomas"].map(x=>`<button class="${state.back===x?"primary":""}" onclick="setBack('${x}')">${x}</button>`).join("");
- $("backMsg").textContent=state.back==="Cargada"?"Reduce volumen 20–30%, RIR 3–4 y evita impacto/explosividad.":state.back==="Síntomas"?"No hagas la sesión normal. Prioriza movilidad suave; si hay dolor irradiado, hormigueo, debilidad o empeoramiento, consulta a un profesional.":"Sigue el plan si el movimiento es cómodo y estable.";
+ $("backMsg").textContent=state.back==="Cargada"
+ ? "Reduce volumen 20–30%, RIR 3–4 y evita impacto/explosividad."
+ : state.back==="Síntomas"
+ ? "No hagas la sesión normal. Prioriza movilidad suave; si hay dolor irradiado, hormigueo, debilidad o empeoramiento, consulta a un profesional."
+ : "Sigue el plan si el movimiento es cómodo y estable.";
  resetExerciseTimer();
 }
+
 window.setBack=x=>{state.back=x;persist();render()};
 $("week").innerHTML=[1,2,3,4].map(x=>`<option value="${x}">sem.${x}</option>`).join("");
 $("session").innerHTML=["A","HIIT","B","Tabata"].map(x=>`<option value="${x}">${NAMES[x]}</option>`).join("");
@@ -207,61 +233,131 @@ function timerRender(){
  $("timer").textContent=`${String(Math.floor(timer/60)).padStart(2,"0")}:${String(timer%60).padStart(2,"0")}`;
  let pct=totalTimer?Math.max(0,Math.min(100,(1-timer/totalTimer)*100)):0;
  $("timerProgress").style.width=pct+"%";
- $("setInfo").textContent=timerKind==="rep"?`Serie ${setNo}/${sets()} · ${repNo}/${parseTarget()} reps`:timerKind==="rest"?`Descanso · próxima serie ${Math.min(setNo+1,sets())}/${sets()}`:timerKind==="interval"?`Intervalo ${intervalNo}/${parseInt(targetText())} · ${timer>0?"Trabajo":"Descanso"}`:timerKind==="tabata"?`Tabata · ronda ${intervalNo}/8 · ${tabWork?"Trabajo 20 s":"Descanso 10 s"}`:"";
+ $("repCount").textContent=repNo;
+ $("setInfo").textContent=timerKind==="rep"
+ ? `Serie ${setNo}/${sets()} · ${repNo}/${parseTarget()} reps`
+ : timerKind==="rest"
+ ? `Descanso · próxima serie ${Math.min(setNo,sets())}/${sets()}`
+ : timerKind==="interval"
+ ? `Intervalo ${intervalNo}/${parseInt(targetText())} · ${$("timerLabel").textContent}`
+ : timerKind==="tabata"
+ ? `Tábata · ronda ${intervalNo}/8 · ${tabWork?"Trabajo 20 s":"Descanso 10 s"}`
+ : "";
 }
+
+function autoNextExercise(){
+ clearInterval(interval);
+ const es=exs();
+ if(state.index<es.length-1){state.index++;render();}
+ else{
+   $("timerLabel").textContent="Sesión completada";
+   timer=0;timerRender();
+ }
+}
+
 function start(){
  clearInterval(interval);
  const e=exs()[state.index],kind=e[6];
  if(kind==="rep"){
-   timerKind="rep";$("repControls").classList.remove("hidden");repNo=repNo||0;timer=0;totalTimer=1;
+   timerKind="rep";$("repControls").classList.remove("hidden");
    $("timerLabel").textContent="Contador de repeticiones";timerRender();return;
  }
  $("repControls").classList.add("hidden");
- if(kind==="time"){timerKind="time";timer=timer||parseInt(targetText());totalTimer=timer;$("timerLabel").textContent="Trabajo"; }
- if(kind==="interval"){timerKind="interval";timer=timer||30;totalTimer=30;$("timerLabel").textContent="Trabajo";intervalNo=intervalNo||1}
- if(kind==="tabata"){timerKind="tabata";timer=timer||(tabWork?20:10);totalTimer=timer;$("timerLabel").textContent=tabWork?"Trabajo":"Descanso"}
+ if(kind==="time"){
+   timerKind="time";timer=timer||parseInt(targetText());totalTimer=timer;
+   $("timerLabel").textContent="Trabajo";
+ }
+ if(kind==="interval"){
+   timerKind="interval";timer=timer||30;totalTimer=30;intervalNo=intervalNo||1;
+   $("timerLabel").textContent="Trabajo";
+ }
+ if(kind==="tabata"){
+   timerKind="tabata";timer=timer||(tabWork?20:10);totalTimer=timer;intervalNo=intervalNo||1;
+   $("timerLabel").textContent=tabWork?"Trabajo":"Descanso";
+ }
  interval=setInterval(()=>{
    timer--;timerRender();
    if(timer<=0){
      navigator.vibrate?.([120,70,120]);
-     if(timerKind==="time"){clearInterval(interval);$("timerLabel").textContent="Serie completada";saveAutoTime();return}
-     if(timerKind==="interval"){ if($("timerLabel").textContent==="Trabajo"){$("timerLabel").textContent="Descanso";timer=30}else{intervalNo++;if(intervalNo>parseInt(targetText())){clearInterval(interval);$("timerLabel").textContent="HIIT completado";return}else{$("timerLabel").textContent="Trabajo";timer=30}} totalTimer=30}
-     if(timerKind==="tabata"){ if(tabWork){tabWork=false;$("timerLabel").textContent="Descanso";timer=10}else{tabWork=true;intervalNo++;if(intervalNo>8){clearInterval(interval);$("timerLabel").textContent="Bloque Tabata completado";return}else{$("timerLabel").textContent="Trabajo";timer=20}} totalTimer=tabWork?20:10}
+     if(timerKind==="time"){
+       clearInterval(interval);saveAutoTime();
+       setTimeout(autoNextExercise,250);return;
+     }
+     if(timerKind==="interval"){
+       if($("timerLabel").textContent==="Trabajo"){
+         $("timerLabel").textContent="Descanso";timer=30;
+       }else{
+         intervalNo++;
+         if(intervalNo>parseInt(targetText())){
+           clearInterval(interval);$("timerLabel").textContent="HIIT completado";
+           setTimeout(autoNextExercise,400);return;
+         }else{$("timerLabel").textContent="Trabajo";timer=30}
+       }
+       totalTimer=30;
+     }
+     if(timerKind==="tabata"){
+       if(tabWork){tabWork=false;$("timerLabel").textContent="Descanso";timer=10}
+       else{
+         tabWork=true;intervalNo++;
+         if(intervalNo>8){
+           clearInterval(interval);$("timerLabel").textContent="Bloque Tábata completado";
+           setTimeout(autoNextExercise,400);return;
+         }else{$("timerLabel").textContent="Trabajo";timer=20}
+       }
+       totalTimer=tabWork?20:10;
+     }
      timerRender();
    }
  },1000);
  timerRender();
 }
+
 function saveAutoTime(){
- $("reps").value=targetText().replace(" s","");$("rir").value="";$("load").value="";save();
+ $("reps").value=targetText().replace(" s","");$("rir").value="";$("load").value="";save(false);
 }
 $("startTimer").onclick=start;
 $("pauseTimer").onclick=()=>clearInterval(interval);
-$("resetTimer").onclick=()=>{resetExerciseTimer();$("repControls").classList.add("hidden")};
+$("resetTimer").onclick=()=>resetExerciseTimer();
+
 $("addRep").onclick=()=>{
  repNo++;timerKind="rep";timerRender();
  if(repNo>=parseTarget()) completeSet();
 };
 $("completeSet").onclick=completeSet;
+
 function completeSet(){
  clearInterval(interval);
  $("repControls").classList.remove("hidden");
  $("reps").value=repNo||targetText();
- $("rir").value=$("rir").value||"";
- save();
- if(setNo<sets()){setNo++;repNo=0;timerKind="rest";timer=60;totalTimer=60;$("timerLabel").textContent="Descanso 60 s";timerRender()}
- else{$("timerLabel").textContent="Ejercicio completado";timer=0;timerRender()}
+ save(false);
+ if(setNo<sets()){
+   setNo++;repNo=0;timerKind="rest";timer=60;totalTimer=60;
+   $("timerLabel").textContent="Descanso 60 s";timerRender();
+ }else{
+   $("timerLabel").textContent="Ejercicio completado";timer=0;timerRender();
+   setTimeout(autoNextExercise,350);
+ }
 }
-function save(){
+
+function save(rerender=true){
  let l=$("load").value,r=$("reps").value,rir=$("rir").value;
  if(!l&&!r&&!rir)return;
- state.logs.push({week:state.week,session:state.session,exercise:exs()[state.index][0],load:l,reps:r,rir,notes:$("notes").value,date:new Date().toLocaleString()});
- persist();["load","reps","rir","notes"].forEach(x=>$(x).value="");renderHistory();
+ state.logs.push({
+   week:state.week,session:state.session,exercise:exs()[state.index][0],
+   load:l,reps:r,rir,notes:$("notes").value,date:new Date().toLocaleString()
+ });
+ persist();["load","reps","rir","notes"].forEach(x=>$(x).value="");
+ renderHistory();
+ if(rerender)render();
 }
-$("save").onclick=save;
+
+$("save").onclick=()=>save(true);
+
 function renderHistory(){
  $("summary").innerHTML=`<b>${state.logs.length}</b> series registradas · guardadas en este dispositivo.`;
- $("logs").innerHTML=state.logs.slice().reverse().map(x=>`<div class="card"><b>sem.${x.week} · ${NAMES[x.session]} · ${x.exercise}</b><br>${x.load||"—"} · ${x.reps||"—"} · RIR ${x.rir||"—"}<div class="muted">${x.date}</div></div>`).join("");
+ $("logs").innerHTML=state.logs.slice().reverse().map(x=>
+ `<div class="card"><b>sem.${x.week} · ${NAMES[x.session]} · ${x.exercise}</b><br>${x.load||"—"} · ${x.reps||"—"} · RIR ${x.rir||"—"}<div class="muted">${x.date}</div></div>`
+ ).join("");
 }
 $("tabTraining").onclick=()=>{$("training").classList.remove("hidden");$("history").classList.add("hidden")};
 $("tabHistory").onclick=()=>{$("training").classList.add("hidden");$("history").classList.remove("hidden");renderHistory()};

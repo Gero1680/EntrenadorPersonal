@@ -1,7 +1,7 @@
 {
-  "name":"Mi Entrenador",
-  "short_name":"Entrenador",
-  "start_url":"./index.html",
+  "name":"Mi Entrenador v4",
+  "short_name":"Entrenador v4",
+  "start_url":"./",
   "display":"standalone",
   "background_color":"#f3f4f6",
   "theme_color":"#111827",

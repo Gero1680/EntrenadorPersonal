@@ -1,18 +1,25 @@
-# Mi Entrenador v3 — GitHub Pages
+# Mi Entrenador v4 — GitHub Pages
 
-Cambios:
-- Botones de semana: `sem.1`, `sem.2`, `sem.3`, `sem.4`.
-- Entrenamientos: `Fuerza A`, `HIIT marcial`, `Fuerza B`, `Tábata`.
-- Semana tipo visible: lunes Fuerza A, martes HIIT marcial, miércoles pádel, jueves Fuerza B, viernes Tábata, sábado descanso, domingo fútbol sala.
-- Cada ejercicio muestra una imagen/esquema encontrado en la web y debajo mantiene el botón de YouTube.
-- Temporizador específico por ejercicio:
-  - Fuerza: contador de repeticiones + series y descanso automático de 60 s.
-  - Paseos/carries: cuenta atrás por tiempo.
-  - HIIT marcial: 30 s trabajo / 30 s descanso y número de intervalos según semana.
-  - Tábata: 20 s trabajo / 10 s descanso × 8.
-- Todos los temporizadores pueden pausarse y reiniciarse.
-- Historial persistente mediante localStorage.
+## Qué cambia en v4
 
-Las imágenes proceden de fuentes web. Para las imágenes del conjunto Free Exercise DB se usa su alojamiento público; el repositorio declara el dataset como público. El proyecto conserva los enlaces de YouTube como en v2.
+- Auditoría de las cuatro sesiones: **ningún ejercicio se repite por nombre** entre Fuerza A, HIIT marcial, Fuerza B y Tábata.
+- Se mantienen patrones de movimiento complementarios sin duplicar el mismo ejercicio.
+- Orden revisado para que los movimientos más demandantes aparezcan antes y los ejercicios de estabilidad/acabado después.
+- **Fuerza A (lunes):** sentadilla → tirón → empuje → unilateral → bisagra → estabilidad lateral.
+- **HIIT marcial (martes):** boxeo → rodillas → desplazamiento lateral → patada frontal; trabajo cardiovascular/coordinativo sin repetir ejercicios de fuerza.
+- **Fuerza B (jueves):** step-up → empuje vertical → puente de glúteos → tirón inclinado → carga bilateral → core.
+- **Tábata (viernes):** flexiones → isométrico de piernas → bird-dog → marcha de oso alta, con volumen corto para no interferir tanto con el fútbol sala del domingo.
+- Se conserva el selector `sem.1`–`sem.4`, el horario semanal, imágenes/esquemas, enlaces de YouTube, contador de repeticiones, temporizadores, historial y modo de espalda.
+- El temporizador de cada ejercicio avanza automáticamente al siguiente ejercicio cuando termina el último bloque/serie.
 
-Publicación: sube el contenido a la raíz del repositorio y activa Settings → Pages → Deploy from a branch → main → /(root).
+## Criterio de entrenamiento
+
+El programa prioriza regularidad, trabajo de los principales grupos musculares, variedad de patrones y progresión sostenible. Las recomendaciones de ACSM publicadas en 2026 destacan que la consistencia y el trabajo de los grandes grupos musculares son más importantes que hacer programas innecesariamente complejos. La OMS recomienda actividades de fortalecimiento de los principales grupos musculares al menos 2 días por semana.
+
+## Publicar
+
+Sube el contenido de esta carpeta a la raíz del repositorio de GitHub y activa:
+
+Settings → Pages → Deploy from a branch → main → /(root)
+
+La PWA incluye `manifest.webmanifest`, `sw.js` e iconos.
